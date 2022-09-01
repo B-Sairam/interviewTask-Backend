@@ -43,7 +43,7 @@ router.post('/login',async(req,res)=>{
       $or: [{
         "email": EmailPhone
       }, {
-        "phone": EmailPhone
+        "mobile": EmailPhone
     }]
     });
     if(!EmailPhone||!password){
@@ -70,8 +70,11 @@ router.post('/login',async(req,res)=>{
 // Adding user
 router.post('/creatUser',async(req,res)=>{
   let {name,email,mobile,age} = req.body;
+  const existUser = await UserDetail.findOne({email:email})
     if(!name||!email||!mobile||!age){
       return res.status(400).send("Enter the all Fields")
+    }else if(existUser){
+      return res.status(400).send("User Already Added in List")
     }else{
       try {
         let user = await UserDetail.create(req.body);
@@ -81,6 +84,7 @@ router.post('/creatUser',async(req,res)=>{
             return res.status(201).send("Error occur while Adding")
         }
     } catch (error) {
+      console.log(error);
         return res.status(500).send("server error!!")
   
     }
@@ -93,7 +97,7 @@ router.post('/creatUser',async(req,res)=>{
 router.get('/getUser',async(req,res)=>{
   try {
         let data = await UserDetail.find();
-        return res.status(200).json({message:"Login Successful",user:data})
+        return res.status(200).json({user:data})
       } catch (error) {
         console.log(error);
       }
